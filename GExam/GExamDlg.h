@@ -24,7 +24,7 @@ public:
 	void   AdjustPostionControl(UINT nType, int x, int y, int w, int h, int Gap);
 	bool   CheckEditValue(int nValue);
 
-	void	TRACE_RECT(CString aa, CRect& rect);
+	
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 

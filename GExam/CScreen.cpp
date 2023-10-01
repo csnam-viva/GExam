@@ -60,7 +60,6 @@ void CScreen::DrawData(CDC* pDC)
 		DrawCircle(pDC, m_circleRect[k]);
 		GetCenterXY(m_circleRect[k], m_nCircleSize, &dCenterX, &dCenterY);
 		DrawCross(pDC, dCenterX, dCenterY);
-
 	}
 
 }
@@ -82,10 +81,10 @@ void CScreen::DrawCross(CDC* pDC, double dCenterX, double dCenterY)
 	pen.CreatePen(PS_SOLID, 2, COLOR_RED);
 	
 	CPen* pOldPen = pDC->SelectObject(&pen);
-	pDC->MoveTo(dCenterX - 5, dCenterY);
-	pDC->LineTo(dCenterX + 5, dCenterY);
-	pDC->MoveTo(dCenterX, dCenterY - 5);
-	pDC->LineTo(dCenterX, dCenterY + 5);
+	pDC->MoveTo((int)(dCenterX - 5), (int)dCenterY);
+	pDC->LineTo((int)(dCenterX + 5), (int)dCenterY);
+	pDC->MoveTo((int)dCenterX, (int)(dCenterY - 5));
+	pDC->LineTo((int)dCenterX, (int)(dCenterY + 5));
 	pDC->SelectObject(pOldPen);
 
 }

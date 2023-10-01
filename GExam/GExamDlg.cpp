@@ -197,23 +197,20 @@ bool  CGExamDlg::CheckEditValue(int nValue)
 void CGExamDlg::OnBnClickedBtndraw()
 {
 	CRect rect;
-	static bool bPressCheck = false;
-	//if (bPressCheck) return;
-	// bPressCheck = true;
+
 	int nCircleSize = GetDlgItemInt(IDC_EDIT_CIRCLE_SIZE);
 
 	if (!CheckEditValue(nCircleSize)) {
 		AfxMessageBox(_T("10에서 100사이 값을 입력하세요 "));
 		return;
 	}
-	
-	m_pScreen->SetCircleSize(nCircleSize);
-	// get screen size
-	m_pScreen->GetWindowRect(&rect);
-	m_pScreen->MakePattern(rect.Width(), rect.Height());
-	/*bPressCheck = false;*/
-}
+	if (m_pScreen) {
+		m_pScreen->GetWindowRect(&rect);
+		m_pScreen->SetCircleSize(nCircleSize);
+		m_pScreen->MakePattern(rect.Width(), rect.Height());
+	}
 
+}
 
 void CGExamDlg::AdjustPostionControl(UINT nCtrlID, int x, int y, int w,int h, int Gap = 0 )
 {
@@ -249,10 +246,5 @@ void CGExamDlg::OnSize(UINT nType, int cx, int cy)
 		AdjustPostionControl(IDC_EDIT_CIRCLE_SIZE, nLeft, nTop, 100, 40, 10);
 
 	}
-	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
-}
-
-void CGExamDlg::TRACE_RECT(CString aa, CRect& rect)
-{
-	TRACE("%s = %d,%d,%d,%d \n", aa, rect.left, rect.top, rect.right, rect.bottom);
+	
 }
