@@ -2,7 +2,7 @@
 
 
 // CScreen
-#define MAX_POINT	10
+#define MAX_POINT	20
 
 class CScreen : public CWnd
 {
@@ -14,6 +14,7 @@ private:
 	CImage  m_image;
 
 	int     m_nCircleSize;
+	int		m_nThresHold;
 	int	    m_nDataCount = 0;
 	void	DrawData(CDC* pDC);
 

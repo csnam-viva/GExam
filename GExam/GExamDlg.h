@@ -5,7 +5,7 @@
 #pragma once
 
 #include "CScreen.h"
-#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+
 // CGExamDlg 대화 상자
 class CGExamDlg : public CDialogEx
 {

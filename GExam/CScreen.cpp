@@ -6,7 +6,9 @@
 #include "CScreen.h"
 #include <iostream>
 using namespace std;
-
+#ifdef _DEBUG
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
+#endif
 
 #define COLOR_RED		RGB(0xff, 0x00, 0x00)
 #define COLOR_GREEN		RGB(0x00, 0xff, 0x00)
@@ -22,7 +24,7 @@ IMPLEMENT_DYNAMIC(CScreen, CWnd)
 CScreen::CScreen()
 {
 	m_nCircleSize = 0;
-	//memset(m_nCircleSize, 0, sizeof(m_nCircleSize));
+	m_nThresHold = 0x80;
 }
 
 CScreen::~CScreen()
@@ -45,27 +47,13 @@ void CScreen::OnPaint()
 	if (m_image) {
 		m_image.Draw(dc, 0, 0);
 		DrawData(&dc);
-
-	//CPaintDC dc(this); // device context for painting
-	 //   CBrush backBrush(COLOR_BLACK);
-	 //   CBrush* pPrevBrush = dc.SelectObject(&backBrush);
-	 //   CRect rect;
-	 //   dc.GetClipBox(&rect);
-		////TRACE("GetClipBox =%d, %d ,%d, %d \n ", rect.left, rect.top, rect.Width(), rect.Height());
-		//dc.PatBlt(rect.left, rect.top, rect.Width(), rect.Height(), PATCOPY);
-	 //   dc.SelectObject(backBrush);
-	 //   
-		//DrawCicle(&dc, 10);
-		
 	}
-		
 }
 
 void CScreen::DrawData(CDC* pDC)
 {
 	double dCenterX = 0;
 	double dCenterY = 0;
-
 
 	for (int k = 0; k < MAX_POINT; k++) {
 
@@ -75,7 +63,6 @@ void CScreen::DrawData(CDC* pDC)
 
 	}
 
-
 }
 void CScreen::DrawCircle(CDC* pDC, CRect rect )
 {
@@ -83,9 +70,7 @@ void CScreen::DrawCircle(CDC* pDC, CRect rect )
 	CPen yellow_pen(PS_SOLID, 1, COLOR_YELLOW);
 	CBrush* pOldBrush = pDC->SelectObject(&blackBrush);
 	CPen* pOldPen = pDC->SelectObject(&yellow_pen);
-	
-		//rect.SetRect(m_ptData[i], m_ptData[i]);
-		//rect.InflateRect(m_nCircleSize, m_nCircleSize);
+
 	pDC->Ellipse(rect);
 	pDC->SelectObject(&pOldBrush);
 	pDC->SelectObject(&pOldPen);
@@ -111,7 +96,6 @@ void CScreen::GetCenterXY(CRect rect, int nRadius, double* dCenterX, double* dCe
 	int nCount = 0;
 	long nWeight = 0;
 	int x, y = 0;
-	int nTH = 0x80;
 	unsigned char* fm = (unsigned char*)m_image.GetBits();
 	int nPitch = m_image.GetPitch();
 
@@ -124,7 +108,7 @@ void CScreen::GetCenterXY(CRect rect, int nRadius, double* dCenterX, double* dCe
 			y = j - rect.top;
 			if (IsInCircle(x, y, m_nCircleSize, m_nCircleSize, m_nCircleSize))
 			{
-				//if (fm[j * nPitch + i] > nTH)
+				if (fm[j * nPitch + i] > m_nThresHold)
 				{
 					nSumX += i;
 					nSumY += j;
@@ -135,7 +119,7 @@ void CScreen::GetCenterXY(CRect rect, int nRadius, double* dCenterX, double* dCe
 	}
 	*dCenterX = (double)nSumX / nCount;
 	*dCenterY = (double)nSumY / nCount;
-	cout << "XY" << *dCenterX << "\t" << *dCenterY << endl;
+	printf("RECT(%d,%d,%d,%d)  X =%3.1f Y=%3.1f \n", rect.left, rect.right, rect.top, rect.bottom, *dCenterX, *dCenterY);
 }
 bool CScreen::IsInCircle(int i, int j, int nCenterX, int nCenterY, int nRadius)
 {
@@ -152,63 +136,15 @@ bool CScreen::IsInCircle(int i, int j, int nCenterX, int nCenterY, int nRadius)
 	return bRet;
 }
 
-
-//void CScreen::MakeCenter(, int radius)
-//{
-//	for (int x = centerX - radius; x <= centerX + radius; x++)
-//	{
-//		for (int y = centerY - radius; y <= centerY + radius; y++)
-//		{
-//			int distance = (x - centerX) * (x - centerX) + (y - centerY) * (y - centerY);
-//			if (distance <= radius * radius)
-//			{
-//				TRACE("x =%d, y=%d ", x, y);
-//				pDC->SetPixel(x, y, RGB(255, 0, 0));
-//			}
-//		}
-//	}
-//
-//}
-
-void CScreen::DrawCicle(CDC* pDC,int nSize)
-{
-	//CRect clientRect;
-	//CPen* pOldPen;
-	//CPen yellow_pen(PS_SOLID, 1, COLOR_YELLOW);
-	//GetClientRect(&clientRect);
-
-	//int centerX = clientRect.Width() / 2;
-	//int centerY = clientRect.Height() / 2;
-	//int radius = 30;
-
-	//pOldPen = pDC->SelectObject(&yellow_pen);
-	//pDC->Ellipse(centerX - radius, centerY - radius, centerX + radius, centerY + radius);
-
-	//for (int x = centerX - radius; x <= centerX + radius; x++)
-	//{
-	//	for (int y = centerY - radius; y <= centerY + radius; y++)
-	//	{
-	//		int distance = (x - centerX) * (x - centerX) + (y - centerY) * (y - centerY);
-	//		if (distance <= radius * radius)
-	//		{
-	//			/*CString str;
-	//			str.Format(_T("(%d, %d)"), x, y);
-	//			TRACE("x =%d, y=%d ",x, y);
-	//			pDC->SetPixel(x, y, RGB(255, 0, 0));*/
-	//		}
-	//	}
-	//}
-}
 void CScreen::SetCircleSize(int nSize)
 {
 	m_nCircleSize = nSize;
 }
 void CScreen::MakePattern(int nWidth, int nHeight)
 {
-	
 	CreateImage(nWidth, nHeight);
 	MakeData();
-	Invalidate();
+    Invalidate();
 
 }
 
@@ -250,6 +186,7 @@ void CScreen::MakeData()
 	int nWidth = m_image.GetWidth();
 	int nHeight = m_image.GetHeight();
 	int nPitch = m_image.GetPitch();
+	
 	unsigned char* fm = (unsigned char*)m_image.GetBits();
 
 	for (int k = 0; k < MAX_POINT; k++) {
@@ -262,12 +199,14 @@ void CScreen::MakeData()
 		m_nDataCount = ++nIndex;
 		m_circleRect[k].SetRect(x,y, x+ rectsize, y + rectsize);
 
-		//for (int j = y; j < y + rectsize; j++) {
-		//	for (int i = x; i < x + rectsize; i++) {
-		//		fm[j* nPitch + i] = 0x81; // rand() % 0xff;
-		//	}
-		//}
-	
+		for (int j = y; j < y + rectsize; j++) {
+			for (int i = x; i < x + rectsize; i++) {
+				int m = i - x;
+				int n = j - y;
+				if (IsInCircle(m, n, m_nCircleSize, m_nCircleSize, m_nCircleSize))
+					fm[j * nPitch + i] = 0x81;// rand() % 0xff;
+			}
+		}
 		//cout <<  x  << "," <<  y << ":" << fm[y * nWidth + x] << endl;
 	}
 	
