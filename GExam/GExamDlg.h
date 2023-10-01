@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "CDispArea.h"
-
+#include "CScreen.h"
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 // CGExamDlg 대화 상자
 class CGExamDlg : public CDialogEx
 {
@@ -18,8 +18,13 @@ public:
 	enum { IDD = IDD_GEXAM_DIALOG };
 #endif
 
-	CDispArea* m_pDispArea;
+	CScreen* m_pScreen;
+	int		nCircleSize;
 
+	void   AdjustPostionControl(UINT nType, int x, int y, int w, int h, int Gap);
+	bool   CheckEditValue(int nValue);
+
+	void	TRACE_RECT(CString aa, CRect& rect);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
 
@@ -36,4 +41,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedBtndraw();
+	afx_msg void OnSize(UINT nType, int cx, int cy);
 };

@@ -45,7 +45,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -183,7 +183,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="CDispArea.h" />
+    <ClInclude Include="CScreen.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GExam.h" />
     <ClInclude Include="GExamDlg.h" />
@@ -192,7 +192,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CDispArea.cpp" />
+    <ClCompile Include="CScreen.cpp" />
     <ClCompile Include="GExam.cpp" />
     <ClCompile Include="GExamDlg.cpp" />
     <ClCompile Include="pch.cpp">

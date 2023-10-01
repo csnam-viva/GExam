@@ -7,11 +7,12 @@
 #include "GExam.h"
 #include "GExamDlg.h"
 #include "afxdialogex.h"
+#include <iostream>
+using namespace std;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
@@ -54,6 +55,8 @@ CGExamDlg::CGExamDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_GEXAM_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+
+	m_pScreen = NULL;
 }
 
 void CGExamDlg::DoDataExchange(CDataExchange* pDX)
@@ -66,6 +69,9 @@ BEGIN_MESSAGE_MAP(CGExamDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDOK, &CGExamDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_BtnDraw, &CGExamDlg::OnBnClickedBtndraw)
+	ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 
@@ -100,15 +106,15 @@ BOOL CGExamDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
-
+	CRect rc(0, 0,640, 480);
+	m_pScreen = new CScreen();
+	m_pScreen->Create(NULL,_T(""), WS_CHILD | WS_VISIBLE | WS_BORDER, rc, this, 0);
+	
+	nCircleSize = 30;
+	SetDlgItemInt(IDC_EDIT_CIRCLE_SIZE, nCircleSize);
 	MoveWindow(0, 0, 1280, 800);
-
-	m_pDispArea = new CDispArea();
-	m_pDispArea->Create(IDD_CDispArea, this);
-	m_pDispArea->ShowWindow(SW_SHOW);
-
-	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-
+	SetWindowText(_T("Draw Example"));
+	
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -167,8 +173,86 @@ void CGExamDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	if (m_pDispArea) {
-		delete m_pDispArea;
+
+	if (m_pScreen) {
+		delete m_pScreen;
+	}
+	
+}
+
+
+void CGExamDlg::OnBnClickedOk()
+{
+
+	CDialogEx::OnOK();
+}
+
+bool  CGExamDlg::CheckEditValue(int nValue)
+{
+	if (nValue >= 10 && nValue <= 100) {
+		return true;
+	}
+	return false;
+}
+void CGExamDlg::OnBnClickedBtndraw()
+{
+	CRect rect;
+	static bool bPressCheck = false;
+	//if (bPressCheck) return;
+	// bPressCheck = true;
+	int nCircleSize = GetDlgItemInt(IDC_EDIT_CIRCLE_SIZE);
+
+	if (!CheckEditValue(nCircleSize)) {
+		AfxMessageBox(_T("10에서 100사이 값을 입력하세요 "));
+		return;
+	}
+	
+	m_pScreen->SetCircleSize(nCircleSize);
+	// get screen size
+	m_pScreen->GetWindowRect(&rect);
+	m_pScreen->MakePattern(rect.Width(), rect.Height());
+	/*bPressCheck = false;*/
+}
+
+
+void CGExamDlg::AdjustPostionControl(UINT nCtrlID, int x, int y, int w,int h, int Gap = 0 )
+{
+	CRect rect;
+	rect.left = x + Gap ;
+	rect.top = y;
+	rect.right = rect.left + w;
+	rect.bottom = rect.top + h;
+	GetDlgItem(nCtrlID)->MoveWindow(rect);
+
+}
+void CGExamDlg::OnSize(UINT nType, int cx, int cy)
+{
+	CDialogEx::OnSize(nType, cx, cy);
+	CRect rect;
+	
+	if (m_pScreen)
+	{
+	// Screen Area		
+		rect.left = 10;
+		rect.top = 10;
+		rect.right = cx - 10;
+		rect.bottom = cy - (20 * 4);
+		m_pScreen->MoveWindow(&rect);
+
+		int nTop = rect.bottom + 10;
+		int nLeft = rect.left ;
+	// Adjust 			
+		AdjustPostionControl(IDC_BtnDraw, nLeft, nTop, 200, 40);
+		nLeft = nLeft + 200;	
+		AdjustPostionControl(IDC_LBL_CIRCLE_SIZE, nLeft, nTop, 100, 40, 10);
+		nLeft = nLeft + 100;
+		AdjustPostionControl(IDC_EDIT_CIRCLE_SIZE, nLeft, nTop, 100, 40, 10);
+
 	}
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+}
+
+void CGExamDlg::TRACE_RECT(CString aa, CRect& rect)
+{
+	TRACE("%s = %d,%d,%d,%d \n", aa, rect.left, rect.top, rect.right, rect.bottom);
 }
